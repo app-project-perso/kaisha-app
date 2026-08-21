@@ -6,6 +6,7 @@ import { ensureConfig, isLocalDBEmpty } from '@/db/db';
 import { restoreFromCloud } from '@/lib/restore';
 import { startAutoSync, refreshPendingCount, trySync } from '@/lib/sync';
 import { AuthScreen } from '@/screens/AuthScreen';
+import { ResetPassword } from '@/screens/ResetPassword';
 import { Onboarding } from '@/screens/Onboarding';
 import { Home } from '@/screens/Home';
 import { NewTransaction } from '@/screens/NewTransaction';
@@ -16,7 +17,7 @@ import { Wallet } from 'lucide-react';
 type Screen = 'home' | 'transaction' | 'closure' | 'history';
 
 export default function App() {
-  const { session, loading: authLoading } = useAuth();
+  const { session, loading: authLoading, passwordRecovery, setPasswordRecovery } = useAuth();
   const config = useConfig();
   const [screen, setScreen] = useState<Screen>('home');
   const [initialized, setInitialized] = useState(false);
@@ -80,6 +81,11 @@ export default function App() {
         </div>
       </AppShell>
     );
+  }
+
+  // 1.5 Récupération de mot de passe en cours (lien cliqué depuis l'email)
+  if (passwordRecovery) {
+    return <ResetPassword onDone={() => setPasswordRecovery(false)} />;
   }
 
   // 2. Pas de session → écran de connexion
